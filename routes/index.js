@@ -51,6 +51,9 @@ async function searchMusics(content, user){
       }
       let mp3 = JSON.parse(body);
       let text = 'Выберите файл но номеру \n';
+      if(mp3.mp3Files === null){
+        return false
+      }
       for(let i in mp3.mp3Files){
         let current = mp3.mp3Files[i];
         text += i + ': ' + current.filename + '\n'
@@ -76,7 +79,7 @@ async function sendMusic(chat_id, file) {
       url: url,
       method: 'POST',
       body: {
-        'type': 'audio/mp4',
+        'type': 'audio/mp3',
         'content': file
       },
       headers: {
@@ -95,6 +98,7 @@ async function sendMusic(chat_id, file) {
 }
 
 async function sendFile(coldlink, user_id, chat_id){
+  console.log(coldlink)
   return new Promise((resolve, reject)=>{
     var stream = request(coldlink).pipe(fs.createWriteStream('./' + user_id + 'user.mp3'));
     stream.on('finish', function () {
@@ -162,10 +166,15 @@ router.post('/', async function(req, res, next){
       return res.end()
     }
     let text = await searchMusics(content, user[0]);
+    if(!text){
+      await sendMessage(chat_id, 'Не было найдено')
+      return res.end()
+    }
     await sendMessage(chat_id, text);
     await step.update({
       key: 'wait_music'
     })
+    return res.end()
   }else if(event === 'user/follow'){
     const data = {
       url: 'https://namba1.co/api' + '/chats/create',
