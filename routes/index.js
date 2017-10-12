@@ -106,7 +106,9 @@ async function sendFile(coldlink, user_id, chat_id){
              console.log(body)
              // fs.unlink('./' + user_id + 'user.mp3');
              resolve(true)
-           })
+           }).catch(e=>{
+             console.log(e)
+          })
         }else {
           reject(error)
         }
