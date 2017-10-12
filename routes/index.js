@@ -5,6 +5,7 @@ let request = require('request');
 var soap = require('soap');
 let db = require('../models');
 var Xray = require('x-ray');
+var fs = require('fs');
 var x = Xray();
 var superagent = require("superagent")
 let wsdlUrl = 'http://212.42.117.151:83/checksever/checksever.asmx?WSDL';
