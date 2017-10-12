@@ -67,6 +67,7 @@ async function searchMusics(content, user){
 async function getMusics(id){
   return await new Promise((resolve, reject)=>{
     x(getDownUrl + id, '.startdownload', ['a@href'])((error, result)=>{
+      console.log(result)
       resolve(result[1])
     })
   });
