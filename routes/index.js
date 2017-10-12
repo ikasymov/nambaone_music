@@ -154,8 +154,9 @@ router.post('/', async function(req, res, next){
         return res.end()
       }
       await sendMessage(chat_id, 'Это может занять от 5 секунды до 1 минуты в зависимости от вашего скорости интернета')
-      res.end();
       await sendFile(downUrl, user[0].sender_id, chat_id)
+      await step.update({key: 'new'})
+      return res.end()
     }
     let text = await searchMusics(content, user[0]);
     await sendMessage(chat_id, text);
