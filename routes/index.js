@@ -154,6 +154,7 @@ router.post('/', async function(req, res, next){
     }
     let content = req.body.data.content;
     let chat_id = req.body.data.chat_id;
+    console.log(chat_id)
     if(step.key === 'wait_music'){
       let musics = JSON.parse(user[0].current_data);
       let downUrl = await getMusics(musics[parseInt(content)].id)
