@@ -101,6 +101,7 @@ async function sendFile(coldlink, user_id, chat_id){
       superagent.post('https://files.namba1.co')
        .attach("file", './' + user_id + 'user.mp3').end(function (error, req) {
         if (!error){
+          console.log(req.body)
           sendMusic(chat_id, req.body['file'])
            .then(body => {
              fs.unlink('./' + user_id + 'user.mp3');
