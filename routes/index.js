@@ -80,7 +80,7 @@ async function sendMusic(chat_id, file) {
       url: url,
       method: 'POST',
       body: {
-        'type': 'audio/mp3',
+        'type': 'audio/mp4',
         'content': file
       },
       headers: {
@@ -109,7 +109,7 @@ async function sendFile(coldlink, user_id, chat_id){
           sendMusic(chat_id, req.body['file'])
            .then(body => {
              console.log(body)
-             // fs.unlink('./' + user_id + 'user.mp3');
+             fs.unlink('./' + user_id + 'user.mp3');
              resolve(true)
            }).catch(e=>{
              console.log(e)
