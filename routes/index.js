@@ -4,6 +4,8 @@ let config = require('../config');
 let request = require('request');
 var soap = require('soap');
 let db = require('../models');
+var Xray = require('x-ray');
+var x = Xray();
 var superagent = require("superagent")
 let wsdlUrl = 'http://212.42.117.151:83/checksever/checksever.asmx?WSDL';
 let searchApi = 'http://namba.kg/api/?service=home&action=search&token=3kW5eVl6W5nBmDAl&type=mp3&page=1&query=';
