@@ -1,0 +1,24 @@
+{
+  "name": "severo-electro-bot",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "hbs": "~4.0.1",
+    "morgan": "~1.8.1",
+    "mysql2": "^1.4.2",
+    "request": "^2.82.0",
+    "sequelize": "^4.13.6",
+    "sequelize-cli": "^3.0.0",
+    "serve-favicon": "~2.4.2",
+    "soap": "^0.22.0",
+    "superagent": "^3.6.3",
+    "x-ray": "^2.3.2"
+  }
+}
