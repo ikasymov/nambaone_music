@@ -169,21 +169,22 @@ router.post('/', async function(req, res, next){
     if(step.key === 'wait_music'){
       await setTyppingStatus(chat_id, true)
       let musics = JSON.parse(user[0].current_data);
-      let setIndex = parseInt(content)
-      if (!setIndex){
-        await search(content, chat_id, step, user[0]);
-        await setTyppingStatus(chat_id, false)
+      let setIndex = parseInt(content);
+      if (setIndex || setIndex === 0){
+        let downUrl = await getMusics(musics[setIndex].id)
+        if (downUrl === undefined){
+          sendMessage(chat_id, 'Введите правильный номер файла')
+          return res.end()
+        }
+        await sendFile(downUrl, user[0].sender_id, chat_id)
+        await step.update({key: 'new'})
+        await setTyppingStatus(chat_id, false);
         return res.end()
       }
-      let downUrl = await getMusics(musics[setIndex].id)
-      if (downUrl === undefined){
-        sendMessage(chat_id, 'Введите правильный номер файла')
-        return res.end()
-      }
-      await sendFile(downUrl, user[0].sender_id, chat_id)
-      await step.update({key: 'new'})
-      await setTyppingStatus(chat_id, false);
+      await search(content, chat_id, step, user[0]);
+      await setTyppingStatus(chat_id, false)
       return res.end()
+      
     }
     await search(content, chat_id, step, user[0]);
     await setTyppingStatus(chat_id, false)
