@@ -167,10 +167,12 @@ router.post('/', async function(req, res, next){
     let chat_id = req.body.data.chat_id;
     console.log(chat_id)
     if(step.key === 'wait_music'){
+      await setTyppingStatus(chat_id, true)
       let musics = JSON.parse(user[0].current_data);
       let setIndex = parseInt(content)
       if (!setIndex){
-        await search(content, chat_id, step, user[0])
+        await search(content, chat_id, step, user[0]);
+        await setTyppingStatus(chat_id, false)
         return res.end()
       }
       let downUrl = await getMusics(musics[setIndex].id)
@@ -178,12 +180,13 @@ router.post('/', async function(req, res, next){
         sendMessage(chat_id, 'Введите правильный номер файла')
         return res.end()
       }
-      await sendMessage(chat_id, 'Это может занять от 5 секунды до 1 минуты в зависимости от вашего скорости интернета')
       await sendFile(downUrl, user[0].sender_id, chat_id)
       await step.update({key: 'new'})
+      await setTyppingStatus(chat_id, false);
       return res.end()
     }
     await search(content, chat_id, step, user[0]);
+    await setTyppingStatus(chat_id, false)
     return res.end()
   }else if(event === 'user/follow'){
     const data = {
