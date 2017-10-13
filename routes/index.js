@@ -129,7 +129,7 @@ async function start(chat_id, res, step){
   return res.end()
 }
 
-async function search(content, chat_id, step, user){
+async function search(content, chat_id, step, user, res){
   let text = await searchMusics(content, user);
   console.log(text)
   if(!text){
@@ -182,12 +182,12 @@ router.post('/', async function(req, res, next){
         await setTyppingStatus(chat_id, false);
         return res.end()
       }
-      await search(content, chat_id, step, user[0]);
+      await search(content, chat_id, step, user[0], res);
       await setTyppingStatus(chat_id, false)
       return res.end()
       
     }
-    await search(content, chat_id, step, user[0]);
+    await search(content, chat_id, step, user[0], res);
     await setTyppingStatus(chat_id, false)
     return res.end()
   }else if(event === 'user/follow'){
