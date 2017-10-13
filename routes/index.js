@@ -129,6 +129,17 @@ async function start(chat_id, res, step){
   return res.end()
 }
 
+async function search(content, chat_id, step, user){
+  let text = await searchMusics(content, user);
+  if(!text){
+    await sendMessage(chat_id, 'Не было найдено');
+    return res.end()
+  }
+  await sendMessage(chat_id, text);
+  return await step.update({
+    key: 'wait_music'
+  });
+}
 
 router.post('/', async function(req, res, next){
   const event = req.body.event;
@@ -157,7 +168,12 @@ router.post('/', async function(req, res, next){
     console.log(chat_id)
     if(step.key === 'wait_music'){
       let musics = JSON.parse(user[0].current_data);
-      let downUrl = await getMusics(musics[parseInt(content)].id)
+      let setIndex = parseInt(content)
+      if (!setIndex){
+        await search(content, chat_id, step, user[0])
+        return res.end()
+      }
+      let downUrl = await getMusics(musics[setIndex].id)
       if (downUrl === undefined){
         sendMessage(chat_id, 'Введите правильный номер файла')
         return res.end()
@@ -167,15 +183,7 @@ router.post('/', async function(req, res, next){
       await step.update({key: 'new'})
       return res.end()
     }
-    let text = await searchMusics(content, user[0]);
-    if(!text){
-      await sendMessage(chat_id, 'Не было найдено')
-      return res.end()
-    }
-    await sendMessage(chat_id, text);
-    await step.update({
-      key: 'wait_music'
-    })
+    await search(content, chat_id, step, user[0]);
     return res.end()
   }else if(event === 'user/follow'){
     const data = {
