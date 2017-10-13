@@ -52,7 +52,7 @@ async function searchMusics(content, user){
       let mp3 = JSON.parse(body);
       let text = 'Выберите файл но номеру \n';
       if(mp3.mp3Files === null){
-        return false
+        resolve(false)
       }
       for(let i in mp3.mp3Files){
         let current = mp3.mp3Files[i];
@@ -131,6 +131,7 @@ async function start(chat_id, res, step){
 
 async function search(content, chat_id, step, user){
   let text = await searchMusics(content, user);
+  console.log(text)
   if(!text){
     await sendMessage(chat_id, 'Не было найдено');
     return res.end()
