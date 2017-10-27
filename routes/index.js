@@ -50,7 +50,7 @@ async function searchMusics(content, user){
         reject(error)
       }
       let mp3 = JSON.parse(body);
-      let text = 'Выберите файл но номеру \n';
+      let text = 'Выберите номер песни: \n';
       if(mp3.mp3Files === null){
         resolve(false)
       }
@@ -133,7 +133,7 @@ async function search(content, chat_id, step, user, res){
   let text = await searchMusics(content, user);
   console.log(text)
   if(!text){
-    await sendMessage(chat_id, 'Не было найдено');
+    await sendMessage(chat_id, 'К сожалению, такой песни нет. Для поиска другой песни, введите название песни или имя исполнителя.');
     return res.end()
   }
   await sendMessage(chat_id, text);
@@ -180,6 +180,7 @@ router.post('/', async function(req, res, next){
         await sendFile(downUrl, user[0].sender_id, chat_id)
         await step.update({key: 'new'})
         await setTyppingStatus(chat_id, false);
+        await sendMessage(chat_id, 'Для поиска другой песни, введите название песни или имя исполнителя')
         return res.end()
       }
       await search(content, chat_id, step, user[0], res);
@@ -219,7 +220,7 @@ router.post('/', async function(req, res, next){
               user_id: user[0].id
             })
           }).then(step=>{
-            let sendText = 'Данный бот позволяет скачивать музыку введите название песни';
+            let sendText = 'Здравствуйте! Для поиска песни введите название песни или имя исполнителя.';
             let chatId = body.data.membership.chat_id;
             sendMessage(chatId, sendText).then(result=>{
               res.end()
