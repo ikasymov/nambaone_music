@@ -11,6 +11,13 @@ var superagent = require("superagent")
 let wsdlUrl = 'http://212.42.117.151:83/checksever/checksever.asmx?WSDL';
 let searchApi = 'http://namba.kg/api/?service=home&action=search&token=3kW5eVl6W5nBmDAl&type=mp3&page=1&query=';
 let getDownUrl = 'http://namba.kg/files/download.php?id=';
+
+let followeText = 'Здравствуйте! Для поиска песни введите название песни или имя исполнителя.';
+let afterDownload = 'Для поиска другой песни, введите название песни или имя исполнителя';
+let notFoundNumber = 'Введите правильный номер песни';
+let notFoundMusic = 'К сожалению, такой песни нет. Для поиска другой песни, введите название песни или имя исполнителя.'
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -99,7 +106,6 @@ async function sendMusic(chat_id, file) {
 }
 
 async function sendFile(coldlink, user_id, chat_id){
-  console.log(coldlink)
   return new Promise((resolve, reject)=>{
     var stream = request(coldlink).pipe(fs.createWriteStream('./' + user_id + 'user.mp3'));
     stream.on('finish', function () {
@@ -108,7 +114,7 @@ async function sendFile(coldlink, user_id, chat_id){
         if (!error){
           sendMusic(chat_id, req.body['file'])
            .then(body => {
-             console.log(body)
+             console.log(body);
              fs.unlink('./' + user_id + 'user.mp3');
              resolve(true)
            }).catch(e=>{
@@ -131,9 +137,8 @@ async function start(chat_id, res, step){
 
 async function search(content, chat_id, step, user, res){
   let text = await searchMusics(content, user);
-  console.log(text)
   if(!text){
-    await sendMessage(chat_id, 'К сожалению, такой песни нет. Для поиска другой песни, введите название песни или имя исполнителя.');
+    await sendMessage(chat_id, notFoundMusic);
     return res.end()
   }
   await sendMessage(chat_id, text);
@@ -166,30 +171,35 @@ router.post('/', async function(req, res, next){
     }
     let content = req.body.data.content;
     let chat_id = req.body.data.chat_id;
-    console.log(chat_id)
+    let lowerContent = content.toLowerCase();
+    if(lowerContent === 'start' || lowerContent === 'старт'){
+      sendMessage(chat_id, followeText);
+      await step.update({key: 'new'});
+      return res.end()
+    }
     if(step.key === 'wait_music'){
-      await setTyppingStatus(chat_id, true)
+      await setTyppingStatus(chat_id, true);
       let musics = JSON.parse(user[0].current_data);
       let setIndex = parseInt(content);
       if (setIndex || setIndex === 0){
-        let downUrl = await getMusics(musics[setIndex].id)
+        let downUrl = await getMusics(musics[setIndex].id);
         if (downUrl === undefined){
-          sendMessage(chat_id, 'Введите правильный номер файла')
+          sendMessage(chat_id, notFoundNumber);
           return res.end()
         }
-        await sendFile(downUrl, user[0].sender_id, chat_id)
-        await step.update({key: 'new'})
+        await sendFile(downUrl, user[0].sender_id, chat_id);
+        await step.update({key: 'new'});
         await setTyppingStatus(chat_id, false);
-        await sendMessage(chat_id, 'Для поиска другой песни, введите название песни или имя исполнителя')
+        await sendMessage(chat_id, afterDownload);
         return res.end()
       }
       await search(content, chat_id, step, user[0], res);
-      await setTyppingStatus(chat_id, false)
+      await setTyppingStatus(chat_id, false);
       return res.end()
       
     }
     await search(content, chat_id, step, user[0], res);
-    await setTyppingStatus(chat_id, false)
+    await setTyppingStatus(chat_id, false);
     return res.end()
   }else if(event === 'user/follow'){
     const data = {
@@ -220,7 +230,7 @@ router.post('/', async function(req, res, next){
               user_id: user[0].id
             })
           }).then(step=>{
-            let sendText = 'Здравствуйте! Для поиска песни введите название песни или имя исполнителя.';
+            let sendText = followeText
             let chatId = body.data.membership.chat_id;
             sendMessage(chatId, sendText).then(result=>{
               res.end()
